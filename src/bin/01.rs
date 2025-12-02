@@ -1,8 +1,10 @@
 advent_of_code::solution!(1);
 use anyhow::Result;
 use anyhow::anyhow;
+use num::Zero;
 use num::traits::Euclid;
 
+#[derive(Debug)]
 enum Direction {
     Left(i64),
     Right(i64),
@@ -41,7 +43,6 @@ pub fn part_one(input: &str) -> Option<i64> {
             }
         }
         dial = dial.rem_euclid(100);
-        println!("{:?}", dial);
         if dial == 0 {
             password += 1;
         }
@@ -50,7 +51,39 @@ pub fn part_one(input: &str) -> Option<i64> {
 }
 
 pub fn part_two(input: &str) -> Option<i64> {
-    None
+    let inputs = parseInput(input).expect("Parse Error");
+    let mut dial = 50i64;
+    let mut password = 0;
+    for input in inputs {
+        match input {
+            Direction::Left(val) => {
+                if dial == 0 {
+                    dial = 100;
+                }
+                for _ in 0..val {
+                    dial -= 1;
+                    if dial == 0 {
+                        dial = 100;
+                        password += 1;
+                    }
+                }
+            }
+            Direction::Right(val) => {
+                if dial == 100 {
+                    dial = 0;
+                }
+                for _ in 0..val {
+                    dial += 1;
+                    if dial == 100 {
+                        dial = 0;
+                        password += 1
+                    }
+                }
+            }
+        }
+        // println!("{input:?}, {password:?}, {dial:?}");
+    }
+    Some(password)
 }
 
 #[cfg(test)]
@@ -66,6 +99,18 @@ mod tests {
     #[test]
     fn test_part_two() {
         let result = part_two(&advent_of_code::template::read_file("examples", DAY));
+        assert_eq!(result, Some(6));
+    }
+
+    #[test]
+    fn test_part_two_customs() {
+        let result = part_two(&advent_of_code::template::read_file("customs", DAY));
+        assert_eq!(result, Some(11));
+    }
+
+    #[test]
+    fn test_part_two_inputs() {
+        let result = part_two(&advent_of_code::template::read_file("inputs", DAY));
         assert_eq!(result, None);
     }
 }
