@@ -1,5 +1,8 @@
 advent_of_code::solution!(2);
 
+use std::collections::HashMap;
+use std::collections::HashSet;
+
 use anyhow::Error;
 use anyhow::Result;
 use anyhow::anyhow;
@@ -57,7 +60,48 @@ pub fn part_one(input: &str) -> Option<u64> {
 }
 
 pub fn part_two(input: &str) -> Option<u64> {
-    None
+    let inputs = input
+        .split_terminator(",")
+        .inspect(|v| {
+            // dbg!(v);
+        })
+        .map(Input::try_from)
+        .collect::<Result<Vec<Input>>>()
+        .expect("Failed to parse input");
+
+    let dividers_map: HashMap<u32, Vec<u64>> = [
+        (1, vec![]),
+        (2, vec![11]),
+        (3, vec![111]),
+        (4, vec![1111, 101]),
+        (5, vec![11111]),
+        (6, vec![111111, 1001, 10101]),
+        (7, vec![1111111]),
+        (8, vec![11111111, 10001, 1010101]),
+        (9, vec![111111111, 1001001]),
+        (10, vec![1111111111, 100001, 101010101]),
+    ]
+    .into_iter()
+    .collect();
+
+    let mut sum = 0;
+    for input in inputs {
+        // let mut visited = HashSet::new();
+        for i in input.lower..=input.upper {
+            let digit = i.ilog10() + 1;
+            let dividers = dividers_map
+                .get(&digit)
+                .expect(&format!("Can't find {} in the digit map", i));
+            for divider in dividers {
+                if i % divider == 0 {
+                    sum += i;
+                    dbg!(i);
+                    break;
+                }
+            }
+        }
+    }
+    Some(sum)
 }
 
 #[cfg(test)]
@@ -73,6 +117,6 @@ mod tests {
     #[test]
     fn test_part_two() {
         let result = part_two(&advent_of_code::template::read_file("examples", DAY));
-        assert_eq!(result, None);
+        assert_eq!(result, Some(4174379265));
     }
 }
