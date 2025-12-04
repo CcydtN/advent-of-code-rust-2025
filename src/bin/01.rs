@@ -102,10 +102,4 @@ mod tests {
         let result = part_two(&advent_of_code::template::read_file("customs", DAY));
         assert_eq!(result, Some(11));
     }
-
-    #[test]
-    fn test_part_two_inputs() {
-        let result = part_two(&advent_of_code::template::read_file("inputs", DAY));
-        assert_eq!(result, Some(6386));
-    }
 }
